@@ -1,5 +1,6 @@
 package api.wagenreihungsplandb.model;
 
+import lombok.Setter;
 import lombok.ToString;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -8,6 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @XmlRootElement(name = "station")
+@Setter
 @ToString
 public class Station {
 

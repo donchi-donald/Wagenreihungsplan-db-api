@@ -1,7 +1,6 @@
 package api.wagenreihungsplandb.service;
 
-import api.wagenreihungsplandb.model.Station;
-import api.wagenreihungsplandb.model.WagenstandsanzeigerResponse;
+import api.wagenreihungsplandb.model.*;
 import org.springframework.stereotype.Service;
 
 import javax.xml.bind.JAXBContext;
@@ -39,7 +38,7 @@ public class WagenstandService {
 
     private File selectXmlFile(String ril100) {
         File xmlFilesDirectory = new File(XML_FILES_DIRECTORY);
-        File[] xmlFiles = xmlFilesDirectory.listFiles((dir, name) -> name.startsWith(ril100) && name.endsWith(".xml"));
+        File[] xmlFiles = xmlFilesDirectory.listFiles((dir, name) -> name.startsWith(ril100+"_") && name.endsWith(".xml"));
 
         if (xmlFiles != null && xmlFiles.length > 0) {
             return xmlFiles[0];
@@ -56,17 +55,24 @@ public class WagenstandService {
 
     private List<String> getGleisabschnitteFromData(Station station, int trainNumber, int wagenNumber) {
         List<String> gleisabschnitte = new ArrayList<>();
-        station.getTracks().forEach(track -> {
-            track.getTrains().forEach(train -> {
+        boolean isSchongefunden = false;
+        for(Track track : station.getTracks()){
+            for(Train train: track.getTrains()){
                 if (train.getTrainNumbers().contains(trainNumber)){
-                    train.getWaggons().forEach(waggon -> {
+                    System.out.println(train);
+                    for(Waggon waggon: train.getWaggons()){
                         if (waggon.getNumber() == wagenNumber) {
                             gleisabschnitte.addAll(waggon.getSections());
+                            isSchongefunden = true;
                         }
-                    });
+                    }
+                    break;
                 }
-            });
-        });
+            }
+            if(isSchongefunden){
+                break;
+            }
+        }
         return gleisabschnitte;
     }
 }
